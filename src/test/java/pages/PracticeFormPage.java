@@ -3,13 +3,12 @@ package pages;
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
 
+import java.io.File;
 import java.util.Map;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selenide.*;
 import static java.lang.String.format;
-import static org.openqa.selenium.By.cssSelector;
-import static org.openqa.selenium.By.xpath;
 import static selectors.PracticeFormSelectors.*;
 
 public class PracticeFormPage {
@@ -56,27 +55,27 @@ public class PracticeFormPage {
         datePicker.shouldBe(visible);
         datePicker.$(DATEPICKER_MONTH).selectOption(month);
         datePicker.$(DATEPICKER_YEAR).selectOption(year);
-        datePicker.$(cssSelector(format(DATE_BY_NUMBER, day))).click();
+        datePicker.$(format(DATE_BY_NUMBER, day)).click();
         datePicker.shouldBe(not(visible));
         return this;
     }
 
     public PracticeFormPage withSubjects(String... objects) {
         for (String object : objects) {
-            $(SUBJECTS).$(cssSelector("input")).setValue(object).pressEnter();
+            $(SUBJECTS).$("input").setValue(object).pressEnter();
         }
         return this;
     }
 
     public PracticeFormPage withHobbies(String... hobbies) {
         for (String hobby : hobbies) {
-            $(xpath(format(HOBBY_BY_NAME, hobby))).click();
+            $x(format(HOBBY_BY_NAME, hobby)).click();
         }
         return this;
     }
 
     public PracticeFormPage withUploadedPicture(String fileName) {
-        $(UPLOAD_PICTURE_ID).uploadFromClasspath(fileName);
+        $(UPLOAD_PICTURE_ID).uploadFile(new File("src/test/resources/images/" + fileName));
         return this;
     }
 
@@ -95,7 +94,7 @@ public class PracticeFormPage {
         $(SUBMIT_ID).submit();
     }
 
-    public static void checkSettings(Map<String, String> settingsMap) {
-        settingsMap.forEach((key, value) -> $(xpath(format(MODAL_SETTING_VALUE_BY_NAME, key))).shouldHave(exactText(value)));
+    public static void assertPracticeForm(Map<String, String> settingsMap) {
+        settingsMap.forEach((key, value) -> $x(format(MODAL_SETTING_VALUE_BY_NAME, key)).shouldHave(exactText(value)));
     }
 }

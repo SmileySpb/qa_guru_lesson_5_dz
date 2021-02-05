@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.codeborne.selenide.AssertionMode.SOFT;
-import static pages.PracticeFormPage.checkSettings;
+import static pages.PracticeFormPage.assertPracticeForm;
 
 @ExtendWith({SoftAssertsExtension.class})
 public class PracticeFormTests {
@@ -20,19 +20,27 @@ public class PracticeFormTests {
         Configuration.assertionMode = SOFT;
         new PracticeFormPage()
                 .openUrl()
-                .withFirstname("Maksim")
-                .withLastname("Kanin")
-                .withEmail("qa@mail.ru")
-                .withGender("Male")
-                .withMobileNumber("9119888888")
-                .withDateOfBirth(17, "November", "1989")
-                .withSubjects("Maths", "Chemistry")
-                .withHobbies("Sports", "Reading", "Music")
-                .withUploadedPicture("images/qa.png")
-                .withAddress("Saint-Petersburg")
-                .withStateAndCity("NCR", "Noida")
+                .withFirstname(expectedSettings().get("Student Name").split(" ")[0])
+                .withLastname(expectedSettings().get("Student Name").split(" ")[1])
+                .withEmail(expectedSettings().get("Student Email"))
+                .withGender(expectedSettings().get("Gender"))
+                .withMobileNumber(expectedSettings().get("Mobile"))
+                .withDateOfBirth(Integer.parseInt(expectedSettings().get("Date of Birth")
+                                .split(",")[0]
+                                .split(" ")[0]),
+                        expectedSettings().get("Date of Birth")
+                                .split(",")[0]
+                                .split(" ")[1],
+                        expectedSettings().get("Date of Birth")
+                                .split(",")[1])
+                .withSubjects(expectedSettings().get("Subjects").split(","))
+                .withHobbies(expectedSettings().get("Hobbies").replaceAll(" ", "").split(","))
+                .withUploadedPicture(expectedSettings().get("Picture"))
+                .withAddress(expectedSettings().get("Address"))
+                .withStateAndCity(expectedSettings().get("State and City").split(" ")[0]
+                        , expectedSettings().get("State and City").split(" ")[1])
                 .submit();
-        checkSettings(expectedSettings());
+        assertPracticeForm(expectedSettings());
     }
 
     private Map<String, String> expectedSettings() {
